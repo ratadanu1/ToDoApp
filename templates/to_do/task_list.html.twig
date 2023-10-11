@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de sarcini</title>
+</head>
+<body>
+    <h1>Lista de sarcini</h1>
+    <ul>
+        {% for task in tasks %}
+            <li>
+                {{ task.title }}
+                {{ task.dueDate|date('Y-m-d') }}
+                {{ task.categoryId.name }}
+                <a href="/task/view/{{ task.id }}">Detalii</a>
+                <a href="/task/edit/{{ task.id }}">Editeaza</a>
+                <a href="/task/delete/{{ task.id }}">Sterge</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
