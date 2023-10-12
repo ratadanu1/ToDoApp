@@ -8,7 +8,26 @@
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
 
-<div class = "form">
-    {{form (task_form) }}
-</div>
+<form class="container"> 
+    <div class="form-row">
+        <div class="form-group">
+            {{ form_label(task_form.title) }}
+            {{  form(task_form.title) }}
+        </div>
+        <div>
+            {{ form(task_form.description) }}
+        </div>
+        <div class="form-outline mb-4">
+            {{ form(task_form.dueDate) }}
+        </div>
+        <select name="{{ field_name(task_form.category_id) }}" class="form-control">
+            <option value="">Selecteaza categoria</option>
+                {% for label, value in field_choices(task_form.category_id) %}
+                    <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+        </select>
+
+
+    </div>
+</form>
 {% endblock %}
