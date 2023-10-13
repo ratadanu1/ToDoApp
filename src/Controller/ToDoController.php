@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controller;
+use Knp\Component\Pager\PaginatorInterface;
 
 date_default_timezone_set('Europe/Bucharest');
 use App\Repository\TaskRepository;
@@ -15,12 +16,22 @@ use Symfony\Component\HttpFoundation\Request;
 class ToDoController extends AbstractController
 {
     #[Route('/tasks', name: 'app_tasks')]
-    public function viewTasks(TaskRepository $taskRepository): Response
+    public function viewTasks(TaskRepository $taskRepository, PaginatorInterface $paginator, Request $request): Response
     {
         $tasks = $taskRepository->findAll();
 
+        // Paginate the results of the query
+        $tasklist = $paginator->paginate(
+            // Doctrine Query, not results
+            $tasks,
+            // Define the page parameter
+            $request->query->getInt('page', 1),
+            // Items per page
+            3
+        );
+
         return $this->render('to_do/task_list.html.twig', [
-            'tasks' => $tasks,
+            'tasklist' => $tasklist,
         ]);
     }
 
@@ -76,7 +87,7 @@ class ToDoController extends AbstractController
         $form->handleRequest($request);
         if (!($form->isSubmitted() && $form->isValid())) {
             return $this->render('to_do/index.html.twig', [
-                'task_form' => $form->createView(),
+                'task_form' => $form,
             ]);
         }
         $task = $form->getData();

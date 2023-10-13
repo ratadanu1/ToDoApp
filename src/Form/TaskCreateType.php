@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class TaskCreateType extends AbstractType
 {
@@ -25,13 +26,17 @@ class TaskCreateType extends AbstractType
                 message: 'Denumirea trebuie sa contina intre 4 si 20 de caractere.')], 
                 'label' => 'Title',
             ])
-            ->add('description',
-                TextType::class, ['constraints'=>[new Length(min:4, max:20), new NotBlank(), new Regex(
-                    pattern: '/^[A-Za-z]*/', 
-                    message: 'Descrierea trebuie sa contina intre 4 si 20 de caractere.')], 
+            ->add('description', TextType::class, ['constraints'=>[new Length(min:4, max:20), new NotBlank(), new Regex(
+                pattern: '/^[A-Za-z]*/', 
+                message: 'Descrierea trebuie sa contina intre 4 si 20 de caractere.')], 
+                'label' => 'Description',
             ])
-            ->add('dueDate')
+            ->add('dueDate', DateType::class, [
+                'label' => 'Data limita',
+                'attr' => ['class' => 'form-control'],
+            ])
             ->add('category_id', EntityType::class, ['class'=>Category::class, 'choice_label'=>'name', 'constraints'=>(new Type('App\Entity\Category', 'Categoria nu este valida.')),
+                'label' => 'Categoria',
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Save',

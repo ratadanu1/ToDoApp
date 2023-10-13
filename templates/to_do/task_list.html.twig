@@ -1,21 +1,36 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Lista de sarcini</title>
-</head>
-<body>
-    <h1>Lista de sarcini</h1>
-    <ul>
-        {% for task in tasks %}
-            <li>
-                {{ task.title }}
-                {{ task.dueDate|date('Y-m-d') }}
-                {{ task.categoryId.name }}
-                <a href="/task/view/{{ task.id }}">Detalii</a>
-                <a href="/task/edit/{{ task.id }}">Editeaza</a>
-                <a href="/task/delete/{{ task.id }}">Sterge</a>
-            </li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends 'base.html.twig' %}
+
+{% block body %}
+   <h1>Lista de sarcini</h1>
+<div class="table-responsive">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Titlu</th>
+        <th>Data limită</th>
+        <th>Categorie</th>
+        <th>Acțiuni</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasklist %}
+        <tr>
+          <td>{{ task.title }}</td>
+          <td>{{ task.dueDate|date('Y-m-d') }}</td>
+          <td>{{ task.categoryId.name }}</td>
+          <td>
+            <a href="/task/view/{{ task.id }}" class="btn btn-info">Detalii</a>
+            <a href="/task/edit/{{ task.id }}" class="btn btn-warning">Editeaza</a>
+            <a href="/task/delete/{{ task.id }}" class="btn btn-danger">Sterge</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+    <div class="navigation">
+        {{ knp_pagination_render(tasklist, 'to_do/pagination_bootstrap.html.twig') }}
+    </div>
+
+{% endblock %}
