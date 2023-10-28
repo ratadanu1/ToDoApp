@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controller;
+
 use Knp\Component\Pager\PaginatorInterface;
 
 date_default_timezone_set('Europe/Bucharest');
@@ -12,26 +13,30 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Task;
 use App\Form\TaskCreateType;
 use Symfony\Component\HttpFoundation\Request;
+use App\Service\TaskService;
 
 class ToDoController extends AbstractController
 {
-    #[Route('/tasks', name: 'app_tasks')]
-    public function viewTasks(TaskRepository $taskRepository, PaginatorInterface $paginator, Request $request): Response
-    {
-        $tasks = $taskRepository->findAll();
+    private $taskService;
 
-        // Paginate the results of the query
-        $tasklist = $paginator->paginate(
-            // Doctrine Query, not results
-            $tasks,
-            // Define the page parameter
+    public function __construct(TaskService $taskService)
+    {
+        $this->taskService = $taskService;
+    }
+
+    #[Route('/tasklist', name: 'app_task_list')]
+    public function viewTaskList(PaginatorInterface $paginator, Request $request): Response
+    {
+        $task_list = $this->taskService->getTaskList();
+
+        $list = $paginator->paginate(
+            $task_list,
             $request->query->getInt('page', 1),
-            // Items per page
             3
         );
 
         return $this->render('to_do/task_list.html.twig', [
-            'tasklist' => $tasklist,
+            'tasklist' => $list,
         ]);
     }
 
@@ -44,56 +49,57 @@ class ToDoController extends AbstractController
     }
 
     #[Route('/task/delete/{id}', name: 'app_task_delete')]
-    public function deleteTask(int $id, EntityManagerInterface $entityManager): Response
+    public function deleteTask(int $id): Response
     {
-        $task = $entityManager->getRepository(Task::class)->find($id);
+        $task = $this->taskService->deleteTask($id);
 
-        $entityManager->remove($task);
-        $entityManager->flush();
-
-        return $this->redirectToRoute('app_tasks');
+        return $this->redirectToRoute('app_task_list');
     }
 
     #[Route('/task/create', name: 'app_task_create')]
-    public function create(EntityManagerInterface $entityManager , Request $request): Response
+    public function create(Request $request): Response
     {
-        $task= new Task();
-        $form = $this->createForm(TaskCreateType::class, $task, [
-            'method' => 'POST',
+        $form = $this->createForm(TaskCreateType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $title = $form->get('title')->getData();
+            $description = $form->get('description')->getData();
+            $date = $form->get('dueDate')->getData();
+            $category = $form->get('category_id')->getData();
+
+            $this->taskService->createTask($title, $description, $date, $category);
+
+            return $this->redirectToRoute('app_task_create');
+        }
+
+        return $this->render('to_do/index.html.twig', [
+            'task_form' => $form->createView(),
         ]);
 
-        $form->handleRequest($request);
-        if (!($form->isSubmitted() && $form->isValid())) {
-            return $this->render('to_do/index.html.twig', [
-                'task_form' => $form->createView(),
-            ]);
-        }
-        $task = $form->getData();
-        $task->setCreatedAt(new \DateTime());
-        $entityManager->persist($task);
-        $entityManager->flush();
-        return $this->redirectToRoute('app_task_create');
-    
     }
 
     #[Route('/task/edit/{id}', name: 'app_task_edit')]
-    public function editTask(int $id, EntityManagerInterface $entityManager, Request $request): Response
+    public function edit(Request $request, int $id, EntityManagerInterface $entityManager): Response
     {
         $task = $entityManager->getRepository(Task::class)->find($id);
-        $form = $this->createForm(TaskCreateType::class, $task, [
-            'method' => 'POST',
-        ]);
 
+        $form = $this->createForm(TaskCreateType::class, $task);
         $form->handleRequest($request);
-        if (!($form->isSubmitted() && $form->isValid())) {
-            return $this->render('to_do/index.html.twig', [
-                'task_form' => $form,
-            ]);
-        }
-        $task = $form->getData();
-        $entityManager->persist($task);
-        $entityManager->flush();
-        return $this->redirectToRoute('app_tasks');
-    }    
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            $title = $form->get('title')->getData();
+            $description = $form->get('description')->getData();
+            $date = $form->get('dueDate')->getData();
+            $category = $form->get('category_id')->getData();
+
+            $this->taskService->editTask($id, $title, $description, $date, $category);
+
+            return $this->redirectToRoute('app_task_list');
+        }
+
+        return $this->render('to_do/index.html.twig', [
+            'task_form' => $form->createView(),
+        ]);
+    }
 }

@@ -29,10 +29,16 @@
                         {{ form_label(task_form.category_id) }}
                         {{ form_widget(task_form.category_id, {'attr': {'class': 'form-control'}}) }}
                     </div>
+
+                    <div class="form-group">
+                        {{ form_widget(task_form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+                    </div>
                     
                     {{ form_end(task_form) }}
                 </div>
             </div>
         </div>
+
+        <a href="/tasklist" class="btn btn-primary">Inapoi la lista de sarcini</a>
     </div>
 {% endblock %}
