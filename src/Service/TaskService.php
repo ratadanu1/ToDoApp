@@ -2,10 +2,9 @@
 
 namespace App\Service;
 
-
 use App\Entity\Task;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Routing\Exception\NotFoundException;
+use Symfony\Component\HttpFoundation\Response;
 
 class TaskService
 {
@@ -56,7 +55,7 @@ class TaskService
     }
 
     // delete task method
-    public function deleteTask($id)
+    public function deleteTask($id): void
     {
         $task = $this->entityManager->getRepository(Task::class)->find($id);
 

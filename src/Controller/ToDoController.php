@@ -5,7 +5,6 @@ namespace App\Controller;
 use Knp\Component\Pager\PaginatorInterface;
 
 date_default_timezone_set('Europe/Bucharest');
-use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -70,7 +69,7 @@ class ToDoController extends AbstractController
 
             $this->taskService->createTask($title, $description, $date, $category);
 
-            return $this->redirectToRoute('app_task_create');
+            return $this->redirectToRoute('app_task_list');
         }
 
         return $this->render('to_do/index.html.twig', [
