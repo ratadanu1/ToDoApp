@@ -3,26 +3,29 @@
 {% block title %}Register{% endblock %}
 
 {% block body %}
-    <div class="w-4/5 m-auto text-center">
-        <div class="py-12 border-b border-gray-200">
-            <h1 class="text-6xl pt-12 pb-8">
+    <div class="container text-center">
+        <div class="py-5 border-bottom border-gray-200 w-50">
+            <h1 class="display-1 pt-5 pb-4">
                 Register
             </h1>
 
-            {{ form_start(registrationForm) }}
-                {{ form_row(registrationForm.email) }}
-                {{ form_row(registrationForm.plainPassword) }}
-            
-            {{ form_row(registrationForm.agreeTerms) }}
-            
-            <button 
-                type="submit" 
-                class="uppercase mt-15 bg-blue-500 text-gray-100 text-lg w-1/5 mt-10 font-extrabold py-4 px-8 rounded-3xl">
-                Register
-            </button>
-            
+            {{ form_start(registrationForm, {'attr': {'class': 'form-register'}}) }}
+                <div class="mb-3">
+                    {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control', 'placeholder': 'Email'}}) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Password'}}) }}
+                </div>
+                <div class="form-check mb-4">
+                    {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+                    {{ form_label(registrationForm.agreeTerms, 'I agree to the terms', {'label_attr': {'class': 'form-check-label'}}) }}
+                </div>
+                <button 
+                    type="submit" 
+                    class="btn btn-primary btn-lg w-25 mt-4">
+                    Register
+                </button>
             {{ form_end(registrationForm) }}
-
         </div>
     </div>
 {% endblock %}
