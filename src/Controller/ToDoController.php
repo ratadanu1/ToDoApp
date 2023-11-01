@@ -81,9 +81,7 @@ class ToDoController extends AbstractController
     #[Route('/task/edit/{id}', name: 'app_task_edit')]
     public function edit(Request $request, int $id, EntityManagerInterface $entityManager): Response
     {
-        $task = $entityManager->getRepository(Task::class)->find($id);
-
-        $form = $this->createForm(TaskCreateType::class, $task);
+        $form = $this->createForm(TaskCreateType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
