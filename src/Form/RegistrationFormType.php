@@ -39,7 +39,7 @@ class RegistrationFormType extends AbstractType
             'mapped' => false,
             'attr' => [
                 'autocomplete' => 'new-password',
-                'class' => 'form-control', // Clasa Bootstrap pentru input-uri de tip parolă
+                'class' => 'form-control', 
                 'placeholder' => 'Password'
             ],
             'constraints' => [
